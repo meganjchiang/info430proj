@@ -178,7 +178,6 @@ CREATE OR ALTER PROCEDURE uspInsertUser(
             ROLLBACK TRANSACTION T1;
         END CATCH  
     END
-GO
 
 -- Stored Procedure 2 (Megan): Insert into Playlist table
 GO
@@ -218,7 +217,6 @@ CREATE OR ALTER PROCEDURE uspInsertPlaylist(
             ROLLBACK TRANSACTION T1;
         END CATCH  
     END
-GO
 
 -- View 1 (Megan): Top 10 Most-Listened Songs in 2024
 GO
