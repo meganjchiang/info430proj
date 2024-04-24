@@ -152,12 +152,10 @@ CREATE OR ALTER PROCEDURE uspInsertUser(
     BEGIN
         DECLARE @planTypeID INT
 
-
         SET @planTypeID = (
             SELECT planTypeID
             FROM PlanType
             WHERE planTypename = @planTypeName)
-
 
         IF @planTypeID IS NULL
         BEGIN
@@ -165,14 +163,12 @@ CREATE OR ALTER PROCEDURE uspInsertUser(
             RETURN
         END
 
-
         BEGIN TRY
             BEGIN TRANSACTION T1;
                 INSERT INTO SpotifyUser (displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined)
                 VALUES (@displayName, @firstName, @lastName, @email, @profilePictureURL, @planTypeID, @dateJoined)
             COMMIT TRANSACTION T1;
         END TRY
-
 
         BEGIN CATCH
             ROLLBACK TRANSACTION T1;
@@ -191,12 +187,10 @@ CREATE OR ALTER PROCEDURE uspInsertPlaylist(
     BEGIN
         DECLARE @userID INT
 
-
  	    SET @userID = (
             SELECT userID
             FROM SpotifyUser
             WHERE displayName = @userDisplayName)
-
 
         IF @userID IS NULL
         BEGIN
@@ -204,14 +198,12 @@ CREATE OR ALTER PROCEDURE uspInsertPlaylist(
             RETURN
         END
 
-
         BEGIN TRY
             BEGIN TRANSACTION T1;
                 INSERT INTO Playlist (playlistName, userID, playlistDescription, playlistImageURL)
                 VALUES (@playlistName, @userID, @playlistDescription, @playlistImageURL)
             COMMIT TRANSACTION T1;
         END TRY
-
 
         BEGIN CATCH
             ROLLBACK TRANSACTION T1;
