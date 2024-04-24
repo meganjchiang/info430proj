@@ -132,9 +132,93 @@ CREATE TABLE ListenHistory (
 )
 
 /* Populating the Tables with Data */
+BULK INSERT Artist
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Artist.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
 
+BULK INSERT Genre
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Genre.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
 
+BULK INSERT Album
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Album.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
 
+BULK INSERT Song
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Song.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT SongGenreDetails
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\SongGenreDetails.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT SpotifyUser
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\SpotifyUser.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT Follower
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Follower.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT UserFollowerDetails
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\UserFollowerDetails.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT Playlist
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Playlist.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT PlaylistTrack
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\PlaylistTrack.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
+
+BULK INSERT ListenHistory
+FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\ListenHistory.csv'
+WITH (
+   FIELDTERMINATOR = ',',
+   ROWTERMINATOR = '\n',
+   FIRSTROW = 2 -- Skip header
+)
 
 /* Coding Database Objects */
 -- Stored Procedure 1 (Megan): Insert into User table
