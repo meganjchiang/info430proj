@@ -7,6 +7,9 @@ Due Date: Friday, April 26, 2024
 */
 
 /* Creating the Database and Table Structure */
+CREATE DATABASE spotify_db
+GO
+
 CREATE TABLE Artist (
    artistID INT PRIMARY KEY identity(1, 1) NOT NULL,
    artistFirstName VARCHAR(50) NOT NULL,
@@ -103,7 +106,7 @@ CREATE TABLE UserFollowerDetails (
 CREATE TABLE Playlist (
    playlistID INT PRIMARY KEY identity(1, 1) NOT NULL,
    playlistName VARCHAR(100) NOT NULL,
-   userID VARCHAR(30) NOT NULL,
+   userID INT NOT NULL,
    playlistDescription VARCHAR(500),
    playlistImageURL VARCHAR(2048),
    CONSTRAINT fk_playlist_user
@@ -132,16 +135,30 @@ CREATE TABLE ListenHistory (
 )
 
 /* Populating the Tables with Data */
-BULK INSERT Artist
-FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Artist.csv'
-WITH (
-   FIELDTERMINATOR = ',',
-   ROWTERMINATOR = '\n',
-   FIRSTROW = 2 -- Skip header
-)
+INSERT INTO Artist (artistFirstName, artistLastName, artistDescription, artistImageURL)
+VALUES 
+    ('Taylor', 'Swift', 'American singer-songwriter', 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png/1200px-Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png'),
+    ('Harry', 'Styles', 'English singer-songwriter', 'https://variety.com/wp-content/uploads/2022/11/Harry-Styles.jpg?w=1000'),
+    ('Olivia', 'Rodrigo', 'American singer-songwriter', 'https://www.billboard.com/wp-content/uploads/2023/08/olivia-rodrigo-press-cr-Zamar-Velez-2023-billboard-1548.jpg?w=942&h=623&crop=1'),
+    ('Beyonce', NULL, 'American singer-songwriter', 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i5_V6LnkPnR0/v1/-1x-1.jpg'),
+    ('Post', 'Malone', 'American singer-songwriter', 'https://www.billboard.com/wp-content/uploads/2023/04/02-post-malone-press-2023-cr-Emma-Louise-Swanson-billboard-1548.jpg'),
+    ('Sabrina', 'Carpenter', 'American singer-songwriter', 'https://assets.teenvogue.com/photos/65c24d26781384320621e8f8/2:3/w_1590,h_2385,c_limit/1984755401')
+
+-- BULK INSERT Artist
+-- FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Artist.csv'
+-- WITH (
+--    FIELDTERMINATOR = ',',
+--    ROWTERMINATOR = '\n',
+--    FIRSTROW = 2 -- Skip header
+-- )
+
+
+
+-- for the rest of the tables: just insert manually?? we can use CSV to SQL convertor to get INSERT statements
 
 BULK INSERT Genre
-FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Genre.csv'
+-- FROM 'C:\Users\evonnela\Desktop\INFO430\info430proj\csv_files\Genre.csv'
+FROM '/Users/meganchiang/Documents/info430/info430proj/csv_files/Genre.csv'
 WITH (
    FIELDTERMINATOR = ',',
    ROWTERMINATOR = '\n',
