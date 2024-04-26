@@ -7,6 +7,34 @@ Due Date: Friday, April 26, 2024
 */
 
 /* Creating the Database and Table Structure */
+-- Drop tables
+GO
+-- Drop tables if they exist
+IF OBJECT_ID('ListenHistory', 'U') IS NOT NULL
+    DROP TABLE ListenHistory;
+IF OBJECT_ID('PlaylistTrack', 'U') IS NOT NULL
+    DROP TABLE PlaylistTrack;
+IF OBJECT_ID('Playlist', 'U') IS NOT NULL
+    DROP TABLE Playlist;
+IF OBJECT_ID('UserFollowerDetails', 'U') IS NOT NULL
+    DROP TABLE UserFollowerDetails;
+IF OBJECT_ID('Follower', 'U') IS NOT NULL
+    DROP TABLE Follower;
+IF OBJECT_ID('SpotifyUser', 'U') IS NOT NULL
+    DROP TABLE SpotifyUser;
+IF OBJECT_ID('SongGenreDetails', 'U') IS NOT NULL
+    DROP TABLE SongGenreDetails;
+IF OBJECT_ID('Song', 'U') IS NOT NULL
+    DROP TABLE Song;
+IF OBJECT_ID('Album', 'U') IS NOT NULL
+    DROP TABLE Album;
+IF OBJECT_ID('PlanType', 'U') IS NOT NULL
+    DROP TABLE PlanType;
+IF OBJECT_ID('Genre', 'U') IS NOT NULL
+    DROP TABLE Genre;
+IF OBJECT_ID('Artist', 'U') IS NOT NULL
+    DROP TABLE Artist;
+
 -- CREATE DATABASE spotify_db_el_mc
 GO
 
@@ -81,10 +109,11 @@ CREATE TABLE SpotifyUser (
    profilePictureURL VARCHAR(2048),
    planTypeID INT NOT NULL,
    dateJoined DATE NOT NULL,
+   userDuration AS DATEDIFF(day, dateJoined, GETDATE()), -- computed column (Evonne)
    CONSTRAINT fk_user_plan_type
    FOREIGN KEY(planTypeID) REFERENCES PlanType(planTypeID), 
-   CONSTRAINT check_user_email_format
-   CHECK (userEmail LIKE '%_@_%._%') -- check constraint (Evonne)
+   CONSTRAINT check_user_email_format -- check constraint (Evonne)
+   CHECK (userEmail LIKE '%_@_%._%') 
 )
 
 CREATE TABLE Follower (
@@ -99,6 +128,7 @@ CREATE TABLE UserFollowerDetails (
    userID INT NOT NULL,
    followerID INT NOT NULL,
    dateFollowed DATE NOT NULL,
+   followDuration AS DATEDIFF(day, dateFollowed, GETDATE()), -- computed column (Evonne)
    CONSTRAINT fk_user
    FOREIGN KEY(userID) REFERENCES SpotifyUser(userID),
    CONSTRAINT fk_follower
@@ -134,8 +164,8 @@ CREATE TABLE ListenHistory (
    FOREIGN KEY(userID) REFERENCES SpotifyUser(userID),
    CONSTRAINT fk_listen_history_song
    FOREIGN KEY(songID) REFERENCES Song(songID),
-   CONSTRAINT check_time_listened_validity
-   CHECK (timeListened <= GETDATE()), -- check constraint (Evonne)
+   CONSTRAINT check_time_listened_validity -- check constraint (Evonne)
+   CHECK (timeListened <= GETDATE())
 )
 
 /* Populating the Tables with Data */
@@ -241,7 +271,7 @@ VALUES
 
 INSERT INTO ListenHistory (userID, songID, timeListened)
 VALUES 
-    (1, 1, '2024-04-30 08:30:00'),
+    (1, 1, '2022-04-30 08:30:00'),
     (2, 2, '2023-02-15 12:45:00'),
     (3, 3, '2024-03-20 17:20:00'),
     (4, 4, '2023-04-10 10:10:00'),
@@ -413,6 +443,17 @@ CREATE OR ALTER PROCEDURE uspInsertAlbum(
         END CATCH
     END
 
+-- Drop views if they exist
+GO
+IF OBJECT_ID('top_10_listened_songs_2024', 'V') IS NOT NULL
+    DROP VIEW top_10_listened_songs_2024;
+IF OBJECT_ID('user_top_genre', 'V') IS NOT NULL
+    DROP VIEW user_top_genre;
+IF OBJECT_ID('top_10_users_with_most_followers', 'V') IS NOT NULL
+    DROP VIEW top_10_users_with_most_followers;
+IF OBJECT_ID('top_3_most_popular_plans', 'V') IS NOT NULL
+    DROP VIEW top_3_most_popular_plans;
+
 -- View 1 (Megan): Top 10 Most-Listened Songs in 2024
 GO
 CREATE VIEW top_10_listened_songs_2024 AS
@@ -470,4 +511,3 @@ CREATE VIEW top_3_most_popular_plans AS
         ON pt.planTypeID = u.planTypeID
     GROUP BY pt.planTypeName
     ORDER BY numSubscribers DESC;
-
