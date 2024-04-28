@@ -3,12 +3,13 @@ INFO 430: Database Design and Management
 Project Deliverable 3: Physical Design and Database Implementation
 Project Topic: Spotify Database
 Students: Evonne La & Megan Chiang
-Due Date: Friday, April 26, 2024
+Due Date: Sunday, April 28, 2024
 */
 
 /* Creating the Database and Table Structure */
--- Drop tables
+CREATE DATABASE spotify_db_el_mc
 GO
+
 -- Drop tables if they exist
 IF OBJECT_ID('ListenHistory', 'U') IS NOT NULL
     DROP TABLE ListenHistory;
@@ -35,25 +36,24 @@ IF OBJECT_ID('Genre', 'U') IS NOT NULL
 IF OBJECT_ID('Artist', 'U') IS NOT NULL
     DROP TABLE Artist;
 
--- CREATE DATABASE spotify_db_el_mc
-GO
-
 CREATE TABLE Artist (
    artistID INT PRIMARY KEY identity(1, 1) NOT NULL,
    artistFirstName VARCHAR(50) NOT NULL,
    artistLastName VARCHAR(50),
-   artistDescription VARCHAR(500),
-   artistImageURL VARCHAR(2048)
+   artistDescription VARCHAR(500) NOT NULL,
+   artistImageURL VARCHAR(2048),
+   CONSTRAINT check_unique_artist
+   UNIQUE(artistFirstName, artistLastName)
 )
 
 CREATE TABLE Genre (
    genreID INT PRIMARY KEY identity(1, 1) NOT NULL,
-   genreName VARCHAR(50) NOT NULL
+   genreName VARCHAR(50) UNIQUE NOT NULL
 )
 
 CREATE TABLE PlanType (
    planTypeID INT PRIMARY KEY identity(1, 1) NOT NULL,
-   planTypeName VARCHAR(50) NOT NULL,
+   planTypeName VARCHAR(50) UNIQUE NOT NULL,
    planCost MONEY NOT NULL,
    CONSTRAINT check_plan_type -- check constraint (Megan)
    CHECK(planCost >= 0)
@@ -63,15 +63,17 @@ CREATE TABLE Album (
    albumID INT PRIMARY KEY identity(1, 1) NOT NULL,
    albumName VARCHAR(50) NOT NULL,
    artistID INT NOT NULL,
-   releaseDate DATE,
-   albumImageURL VARCHAR(2048),
+   releaseDate DATE NOT NULL,
+   albumImageURL VARCHAR(2048) NOT NULL,
    albumHours INT NOT NULL,
    albumMinutes INT NOT NULL,
    albumTotalMinutes AS (albumHours * 60) + albumMinutes, -- computed column (Megan)
    CONSTRAINT fk_album_artist
    FOREIGN KEY(artistID) REFERENCES Artist(ArtistID),
    CONSTRAINT check_minutes -- check constraint (Megan)
-   CHECK(albumMinutes BETWEEN 0 AND 59)
+   CHECK(albumMinutes BETWEEN 0 AND 59),
+   CONSTRAINT check_unique_album_artist
+   UNIQUE(albumName, artistID)
 )
 
 CREATE TABLE Song (
@@ -87,7 +89,9 @@ CREATE TABLE Song (
    CONSTRAINT fk_song_album
    FOREIGN KEY(albumID) REFERENCES Album(albumID),
    CONSTRAINT check_seconds -- check constraint (Megan)
-   CHECK(songSeconds BETWEEN 0 AND 59)
+   CHECK(songSeconds BETWEEN 0 AND 59),
+   CONSTRAINT check_unique_song_artist
+   UNIQUE(songName, artistID)
 )
 
 CREATE TABLE SongGenreDetails (
@@ -97,15 +101,17 @@ CREATE TABLE SongGenreDetails (
    CONSTRAINT fk_song
    FOREIGN KEY(songID) REFERENCES Song(songID),
    CONSTRAINT fk_genre
-   FOREIGN KEY(genreID) REFERENCES Genre(genreID)
+   FOREIGN KEY(genreID) REFERENCES Genre(genreID),
+   CONSTRAINT check_unique_song_genre
+   UNIQUE(songID, genreID)
 )
 
 CREATE TABLE SpotifyUser (
    userID INT PRIMARY KEY identity(1, 1) NOT NULL,
-   displayName VARCHAR(30) NOT NULL,
+   displayName VARCHAR(30) UNIQUE NOT NULL,
    userFirstName VARCHAR(50) NOT NULL,
    userLastName VARCHAR(50) NOT NULL,
-   userEmail VARCHAR(320) NOT NULL,
+   userEmail VARCHAR(320) UNIQUE NOT NULL,
    profilePictureURL VARCHAR(2048),
    planTypeID INT NOT NULL,
    dateJoined DATE NOT NULL,
@@ -118,7 +124,7 @@ CREATE TABLE SpotifyUser (
 
 CREATE TABLE Follower (
    followerID INT PRIMARY KEY identity(1, 1) NOT NULL,
-   userID INT NOT NULL,
+   userID INT UNIQUE NOT NULL,
    CONSTRAINT fk_follower_user
    FOREIGN KEY(userID) REFERENCES SpotifyUser(userID)
 )
@@ -132,17 +138,22 @@ CREATE TABLE UserFollowerDetails (
    CONSTRAINT fk_user
    FOREIGN KEY(userID) REFERENCES SpotifyUser(userID),
    CONSTRAINT fk_follower
-   FOREIGN KEY(followerID) REFERENCES Follower(followerID)
+   FOREIGN KEY(followerID) REFERENCES Follower(followerID),
+   CONSTRAINT check_unique_user_follower
+   UNIQUE(userID, followerID)
 )
 
 CREATE TABLE Playlist (
    playlistID INT PRIMARY KEY identity(1, 1) NOT NULL,
    playlistName VARCHAR(100) NOT NULL,
    userID INT NOT NULL,
+   playlistDateCreated DATE NOT NULL,
    playlistDescription VARCHAR(500),
    playlistImageURL VARCHAR(2048),
    CONSTRAINT fk_playlist_user
-   FOREIGN KEY(userID) REFERENCES SpotifyUser(userID)
+   FOREIGN KEY(userID) REFERENCES SpotifyUser(userID),
+   CONSTRAINT check_unique_playlist
+   UNIQUE(playlistName, userID, playlistDateCreated)
 )
 
 CREATE TABLE PlaylistTrack (
@@ -165,7 +176,9 @@ CREATE TABLE ListenHistory (
    CONSTRAINT fk_listen_history_song
    FOREIGN KEY(songID) REFERENCES Song(songID),
    CONSTRAINT check_time_listened_validity -- check constraint (Evonne)
-   CHECK (timeListened <= GETDATE())
+   CHECK (timeListened <= GETDATE()),
+   CONSTRAINT check_unique_user_song_listen_time
+   UNIQUE(userID, songID, timeListened)
 )
 
 /* Populating the Tables with Data */
@@ -176,7 +189,9 @@ VALUES
     ('Olivia', 'Rodrigo', 'American singer-songwriter', 'https://www.billboard.com/wp-content/uploads/2023/08/olivia-rodrigo-press-cr-Zamar-Velez-2023-billboard-1548.jpg?w=942&h=623&crop=1'),
     ('Beyonce', NULL, 'American singer-songwriter', 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i5_V6LnkPnR0/v1/-1x-1.jpg'),
     ('Post', 'Malone', 'American singer-songwriter', 'https://www.billboard.com/wp-content/uploads/2023/04/02-post-malone-press-2023-cr-Emma-Louise-Swanson-billboard-1548.jpg'),
-    ('Sabrina', 'Carpenter', 'American singer-songwriter', 'https://assets.teenvogue.com/photos/65c24d26781384320621e8f8/2:3/w_1590,h_2385,c_limit/1984755401')
+    ('Sabrina', 'Carpenter', 'American singer-songwriter', 'https://assets.teenvogue.com/photos/65c24d26781384320621e8f8/2:3/w_1590,h_2385,c_limit/1984755401'),
+    ('Laufey', NULL, 'Icelandic-Chinese singer-songwriter', 'https://images.squarespace-cdn.com/content/v1/60300340d27ffb2c6946ccbe/3fff0229-0816-4d9e-9367-159f92059501/Goddess-WebsiteBackground-1500px.png'),
+    ('SEVENTEEN', NULL, 'South Korean boy band', 'https://images.squarespace-cdn.com/content/v1/62e0a51c3280db7edc1448d5/1a88f88b-47aa-4b78-8641-1b2911e2331f/Seventeen.jpg')
 
 INSERT INTO Genre (genreName)
 VALUES  
@@ -185,7 +200,14 @@ VALUES
     ('Indie'),
     ('R&B'),
     ('Rap'),
-    ('Electronic')
+    ('Electronic'),
+    ('Country'),
+    ('Alternative'),
+    ('Metal'),
+    ('Hip Hop'),
+    ('Classical'),
+    ('Jazz'),
+    ('K-Pop')    
 
 INSERT INTO PlanType (planTypeName, planCost)
 VALUES
@@ -204,7 +226,11 @@ VALUES
     ('GUTS', 3, '2023-09-08', 'https://upload.wikimedia.org/wikipedia/en/0/03/Olivia_Rodrigo_-_Guts.png', 0, 39),
     ('RENAISSANCE', 4, '2022-07-29', 'https://upload.wikimedia.org/wikipedia/en/thumb/8/83/Renaissance_LP_Cover_Art.png/220px-Renaissance_LP_Cover_Art.png', 2, 48),
     ('Hollywood''s Bleeding', 5, '2019-09-06', 'https://upload.wikimedia.org/wikipedia/en/5/58/Post_Malone_-_Hollywood%27s_Bleeding.png', 0, 51),
-    ('emails i can''t send fwd', 6, '2022-07-15', 'https://upload.wikimedia.org/wikipedia/en/thumb/7/78/Sabrina_Carpenter_-_Emails_I_Can%27t_Send.png/220px-Sabrina_Carpenter_-_Emails_I_Can%27t_Send.png', 0, 39)
+    ('emails i can''t send fwd:', 6, '2022-07-15', 'https://upload.wikimedia.org/wikipedia/en/thumb/7/78/Sabrina_Carpenter_-_Emails_I_Can%27t_Send.png/220px-Sabrina_Carpenter_-_Emails_I_Can%27t_Send.png', 0, 39),
+    ('Bewitched', 7, '2023-09-08', 'https://m.media-amazon.com/images/I/81m3iTR5bjL._UF1000,1000_QL80_.jpg', 0, 48),
+    ('SOUR', 3, '2021-05-21', 'https://m.media-amazon.com/images/I/71Te1V90YDL._UF1000,1000_QL80_.jpg', 0, 34),
+    ('Speak Now (Taylor''s Version)', 1, '2023-07-07', 'https://m.media-amazon.com/images/I/71QgmF3cnEL._UF1000,1000_QL80_.jpg', 1, 44),
+    ('Attaca', 8, '2021-10-22', 'https://upload.wikimedia.org/wikipedia/en/7/75/Seventeen_-_Attacca.png', 0, 22)
 
 INSERT INTO Song (songName, artistID, albumID, songMinutes, songSeconds)
 VALUES
@@ -213,7 +239,11 @@ VALUES
     ('vampire', 3, 4, 3, 40),
     ('COZY', 4, 5, 3, 30),
     ('Circle', 5, 6, 3, 37),
-    ('Nonsense', 6, 7, 2, 43)
+    ('Nonsense', 6, 7, 2, 43),
+    ('From the Start', 7, 8, 2, 49), 
+    ('love is embarrassing', 3, 4, 2, 34),
+    ('AMERICA HAS A PROBLEM', 4, 5, 3, 18),
+    ('To you', 8, 11, 3, 45)
 
 INSERT INTO SongGenreDetails (songID, genreID)
 VALUES
@@ -222,7 +252,12 @@ VALUES
     (3, 3),
     (4, 1),
     (5, 2),
-    (6, 1)
+    (6, 1),
+    (7, 1),
+    (7, 12),
+    (8, 1),
+    (9, 1),
+    (10, 13)
 
 INSERT INTO SpotifyUser (displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined)
 VALUES
@@ -231,7 +266,8 @@ VALUES
     ('AliceJohnson', 'Alice', 'Johnson', 'alice@example.com', 'https://www.princeton.edu/sites/default/files/styles/1x_full_2x_half_crop/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=Bg2K7j7J', 2, '2023-03-20'),
     ('BobWilliams', 'Bob', 'Williams', 'bob@example.com', 'https://www.akc.org/wp-content/uploads/2017/11/Golden-Retriever-Puppy.jpg', 5, '2023-04-10'),
     ('EmilyBrown', 'Emily', 'Brown', 'emily@example.com', 'https://us.yumove.com/cdn/shop/articles/Dog_ageing_puppy.jpg?v=1582123836', 4, '2023-05-05'),
-    ('MichaelTaylor', 'Michael', 'Taylor', 'michael@example.com', 'https://www.southernliving.com/thmb/a4b73J7C4S4wgSmymmEgXRCmACA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-185743593-2000-507c6c8883a44851885ea4fbc10a2c9e.jpg', 2, '2023-06-20')
+    ('MichaelTaylor', 'Michael', 'Taylor', 'michael@example.com', 'https://www.southernliving.com/thmb/a4b73J7C4S4wgSmymmEgXRCmACA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-185743593-2000-507c6c8883a44851885ea4fbc10a2c9e.jpg', 2, '2023-06-20'),
+    ('meganchiang', 'Megan', 'Chiang', 'mjchiang@uw.edu', 'https://favim.com/pd/p/orig/2018/09/22/buttercup-sleep-ppg-Favim.com-6357107.jpg', 3, '2024-04-27')
 
 INSERT INTO Follower (userID)
 VALUES 
@@ -240,7 +276,8 @@ VALUES
     (4),
     (5),
     (6),
-    (1)
+    (1),
+    (7)
 
 INSERT INTO UserFollowerDetails (userID, followerID, dateFollowed)
 VALUES
@@ -249,16 +286,19 @@ VALUES
     (3, 4, '2023-03-20'),
     (4, 5, '2023-04-10'),
     (5, 6, '2023-05-05'),
-    (6, 1, '2023-06-20')
+    (6, 1, '2023-06-20'),
+    (2, 1, '2024-02-14'),
+    (7, 1, '2024-04-28')
 
-INSERT INTO Playlist (playlistName, userID, playlistDescription, playlistImageURL)
+INSERT INTO Playlist (playlistName, userID, playlistDateCreated, playlistDescription, playlistImageURL)
 VALUES
-    ('Top Hits', 1, 'Collection of top songs', 'https://c8.alamy.com/comp/2DAD7D2/top-hits-stamp-top-hits-sign-round-grunge-label-2DAD7D2.jpg'),
-    ('Chill Vibes', 2, 'Relaxing music for any mood', 'https://c8.alamy.com/zooms/9/fea52cd0567241618d28f3bbbe97e1aa/2h31w35.jpg'),
-    ('Study Jams', 3, 'Concentration music for studying', 'https://lbhspawprint.com/wp-content/uploads/2021/05/studying-and-music-2-28xswo9.jpg'),
-    ('Workout Mix', 4, 'Energetic tracks for workouts', 'https://i0.wp.com/post.healthline.com/wp-content/uploads/2023/02/female-dumbbells-1296x728-header-1296x729.jpg?w=1155&h=2268'),
-    ('Road Trip Tunes', 5, 'Songs for a perfect road trip', 'https://www.wandering-bird.com/wp-content/uploads/2018/07/songs2-768x512.jpg'),
-    ('Late Night Melodies', 6, 'Songs for winding down', 'https://i.pinimg.com/736x/de/35/98/de359848fb0d981c2b22f14e9fa4de00.jpg')
+    ('Top Hits', 1, '2020-01-01', 'Collection of top songs', 'https://c8.alamy.com/comp/2DAD7D2/top-hits-stamp-top-hits-sign-round-grunge-label-2DAD7D2.jpg'),
+    ('Chill Vibes', 2, '2020-11-05', 'Relaxing music for any mood', 'https://c8.alamy.com/zooms/9/fea52cd0567241618d28f3bbbe97e1aa/2h31w35.jpg'),
+    ('Study Jams', 3, '2023-07-07', 'Concentration music for studying', 'https://lbhspawprint.com/wp-content/uploads/2021/05/studying-and-music-2-28xswo9.jpg'),
+    ('Workout Mix', 4, '2024-04-03', 'Energetic tracks for workouts', 'https://i0.wp.com/post.healthline.com/wp-content/uploads/2023/02/female-dumbbells-1296x728-header-1296x729.jpg?w=1155&h=2268'),
+    ('Road Trip Tunes', 5, '2021-12-13', 'Songs for a perfect road trip', 'https://www.wandering-bird.com/wp-content/uploads/2018/07/songs2-768x512.jpg'),
+    ('Late Night Melodies', 6, '2024-01-01', 'Songs for winding down', 'https://i.pinimg.com/736x/de/35/98/de359848fb0d981c2b22f14e9fa4de00.jpg'),
+    ('on repeat', 'meganchiang', '2024-04-26', 'my favorite songs at the moment!', NULL)
 
 INSERT INTO PlaylistTrack (playlistID, songID)
 VALUES
@@ -267,7 +307,14 @@ VALUES
     (3, 3),
     (4, 4),
     (5, 5),
-    (6, 6)
+    (6, 6),
+    (1, 3),
+    (1, 6),
+    (7, 3),
+    (7, 6),
+    (7, 7),
+    (7, 10),
+    (7, 11)
 
 INSERT INTO ListenHistory (userID, songID, timeListened)
 VALUES 
@@ -276,7 +323,11 @@ VALUES
     (3, 3, '2024-03-20 17:20:00'),
     (4, 4, '2023-04-10 10:10:00'),
     (5, 5, '2023-05-05 14:30:00'),
-    (6, 6, '2023-06-20 20:00:00')
+    (6, 6, '2023-06-20 20:00:00'),
+    (7, 10, '2024-01-05 12:35:20'),
+    (7, 10, '2024-02-14 11:30:0'),
+    (7, 8, '2024-04-27 22:10:59')
+
 
 /* Coding Database Objects */
 -- Stored Procedure 1 (Megan): Insert into User table
@@ -286,7 +337,7 @@ CREATE OR ALTER PROCEDURE uspInsertUser(
     @firstName VARCHAR(50),
     @lastName VARCHAR(50),
     @email VARCHAR(320),
-    @profilePictureURL VARCHAR(2048),
+    @profilePictureURL VARCHAR(2048) = NULL,
     @planTypeName VARCHAR(20),
     @dateJoined DATE
     )
@@ -301,7 +352,7 @@ CREATE OR ALTER PROCEDURE uspInsertUser(
 
         IF @planTypeID IS NULL
         BEGIN
-            RAISERROR ('@planTypeID cannot be NULL; process is terminating', 11,1)
+            RAISERROR ('@planTypeID is NULL; plan type does not exist so process is terminating', 11,1)
             RETURN
         END
 
@@ -317,13 +368,18 @@ CREATE OR ALTER PROCEDURE uspInsertUser(
         END CATCH  
     END
 
+/* examples
+EXEC uspInsertUser 'meganchiang', 'Megan', 'Chiang', 'mjchiang@uw.edu', 'https://favim.com/pd/p/orig/2018/09/22/buttercup-sleep-ppg-Favim.com-6357107.jpg', 'Premium Student', '2024-04-27'
+*/
+
 -- Stored Procedure 2 (Megan): Insert into Playlist table
 GO
 CREATE OR ALTER PROCEDURE uspInsertPlaylist(
     @playlistName VARCHAR(100),
     @userDisplayName VARCHAR(30),
-    @playlistDescription VARCHAR(500),
-    @playlistImageURL VARCHAR(2048)
+    @playlistDateCreated DATE,
+    @playlistDescription VARCHAR(500) = NULL,
+    @playlistImageURL VARCHAR(2048) = NULL
     )
     AS
     BEGIN
@@ -336,14 +392,14 @@ CREATE OR ALTER PROCEDURE uspInsertPlaylist(
 
         IF @userID IS NULL
         BEGIN
-            RAISERROR ('@userID cannot be NULL; process is terminating', 11,1)
+            RAISERROR ('@userID cannot be NULL; user does not exist so process is terminating', 11,1)
             RETURN
         END
 
         BEGIN TRY
             BEGIN TRANSACTION T1;
-                INSERT INTO Playlist (playlistName, userID, playlistDescription, playlistImageURL)
-                VALUES (@playlistName, @userID, @playlistDescription, @playlistImageURL)
+                INSERT INTO Playlist (playlistName, userID, playlistDateCreated, playlistDescription, playlistImageURL)
+                VALUES (@playlistName, @userID, @playlistDateCreated, @playlistDescription, @playlistImageURL)
             COMMIT TRANSACTION T1;
         END TRY
 
@@ -352,14 +408,17 @@ CREATE OR ALTER PROCEDURE uspInsertPlaylist(
         END CATCH  
     END
 
+/* example
+uspInsertPlaylist 'favorites', 'meganchiang', '2024-04-26'
+*/
+
 -- Stored Procedure 3 (Evonne): Insert into Song table
 GO
 CREATE OR ALTER PROCEDURE uspInsertSong(
     @songName VARCHAR(100),
     @artistFirstName VARCHAR(50),
-    @artistLastName VARCHAR(50),
+    @artistLastName VARCHAR(50) = NULL,
     @albumName VARCHAR(50),
-    @releaseDate DATE,
     @songMinutes INT,
     @songSeconds INT
     )
@@ -371,7 +430,9 @@ CREATE OR ALTER PROCEDURE uspInsertSong(
         SET @artistID = (
             SELECT artistID
             FROM Artist
-            WHERE artistFirstName = @artistFirstName AND artistLastName = @artistLastName
+            WHERE artistFirstName = @artistFirstName 
+                AND (artistLastName = @artistLastName 
+                    OR (artistLastName IS NULL AND @artistLastName IS NULL))
         )
 
         IF @artistID IS NULL
@@ -383,7 +444,7 @@ CREATE OR ALTER PROCEDURE uspInsertSong(
         SET @albumID = (
             SELECT albumID
             FROM Album
-            WHERE albumName = @albumName
+            WHERE albumName = @albumName AND artistID = @artistID
         )
 
         IF @albumID IS NULL
@@ -404,6 +465,12 @@ CREATE OR ALTER PROCEDURE uspInsertSong(
         END CATCH
     END
 
+/* examples
+EXEC uspInsertSong 'love is embarrassing', 'Olivia', 'Rodrigo', 'GUTS', 2, 34
+EXEC uspInsertSong 'AMERICA HAS A PROBLEM', 'Beyonce', NULL, 'RENAISSANCE', 3, 18
+EXEC uspInsertSong 'To you', 'SEVENTEEN', NULL, 'Attaca', 3, 45
+*/
+
 -- Stored Procedure 4 (Evonne): Insert into Album table
 GO
 CREATE OR ALTER PROCEDURE uspInsertAlbum(
@@ -422,7 +489,9 @@ CREATE OR ALTER PROCEDURE uspInsertAlbum(
         SET @artistID = (
             SELECT artistID
             FROM Artist
-            WHERE artistFirstName = @artistFirstName AND artistLastName = @artistLastName
+            WHERE artistFirstName = @artistFirstName 
+                AND (artistLastName = @artistLastName 
+                    OR (artistLastName IS NULL AND @artistLastName IS NULL))
         )
 
         IF @artistID IS NULL
@@ -443,6 +512,13 @@ CREATE OR ALTER PROCEDURE uspInsertAlbum(
         END CATCH
     END
 
+/* examples
+EXEC uspInsertAlbum 'SOUR', 'Olivia', 'Rodrigo', '2021-05-21', 'https://m.media-amazon.com/images/I/71Te1V90YDL._UF1000,1000_QL80_.jpg', 0, 34
+EXEC uspInsertAlbum 'Speak Now (Taylor''s Version)', 'Taylor', 'Swift', '2023-07-07', 'https://m.media-amazon.com/images/I/71QgmF3cnEL._UF1000,1000_QL80_.jpg', 1, 44
+EXEC uspInsertAlbum 'Attaca', 'SEVENTEEN', NULL, '2021-10-22', 'https://upload.wikimedia.org/wikipedia/en/7/75/Seventeen_-_Attacca.png', 0, 22
+*/
+
+/* Views (no longer required for assignment) */
 -- Drop views if they exist
 GO
 IF OBJECT_ID('top_10_listened_songs_2024', 'V') IS NOT NULL
@@ -472,6 +548,7 @@ CREATE VIEW user_top_genre AS
     WITH user_genre_counts AS (
         SELECT
             u.userID,
+            u.displayName,
             g.genreName,
             COUNT(l.listenID) as listenCount,
             RANK() OVER (PARTITION BY u.userID ORDER BY COUNT(l.listenID) DESC) AS genre_rank
@@ -482,9 +559,9 @@ CREATE VIEW user_top_genre AS
             ON s.genreID = g.genreID
         JOIN SpotifyUser u 
             ON l.userID = u.userID 
-        GROUP BY u.userID, g.genreName
+        GROUP BY u.userID, u.displayName, g.genreName
     )
-    SELECT userID, genreName
+    SELECT userID, displayName, genreName
     FROM user_genre_counts
     WHERE genre_rank = 1;
 
