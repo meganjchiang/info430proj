@@ -203,7 +203,11 @@ VALUES
     ('Aphex', 'Twin', 'British musician and composer', 'https://res.cloudinary.com/electronic-beats/c_fit,q_auto,f_auto,w_1920/stage/uploads/2013/08/aphex-twin-electronic-beats.jpg'),
     ('Kendrick', 'Lamar', 'American rapper and singer-songwriter', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQpXGKZgni7hwvYnFUen08LQP43RoFAhJc_p6XQ1yL3uDne6GjX'),
     ('Pearl Jam', NULL, 'American rock band', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQ8XDZna5SZwxVTg6YL8cddRaKOFF0WcJHKy0EjMZ4Vz8i6jbQE'),
-    ('Stevie', 'Wonder', 'American singer-songwriter and musician', 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTBPG8lmZR5oWGGKgKL8nscPJEFfPxpDel1CPMHAUKHcnhDl3M8')
+    ('Stevie', 'Wonder', 'American singer-songwriter and musician', 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTBPG8lmZR5oWGGKgKL8nscPJEFfPxpDel1CPMHAUKHcnhDl3M8'),
+    ('Beabadoobee', NULL, 'Filipino-English singer-songwriter and musician', 'https://static.wikia.nocookie.net/taylor-swift/images/e/ef/Beabadoobee_-_Talk.jpg/revision/latest?cb=20240106231443'),
+    ('Chappell', 'Roan', 'American singer-songwriter and musician', 'https://static.independent.co.uk/2023/12/01/12/MAIN%20PRESS%20IMAGE-%20Credit_%20Ryan%20Lee%20Clemens.jpeg'),
+    ('wave to earth', NULL, 'South Korean indie rock band', 'https://i.scdn.co/image/ab67616100005174c3c28df50abf70a11d9f8063'),
+    ('Troye', 'Sivan', 'Australian singer-songwriter', 'https://static.standard.co.uk/2023/05/17/14/newFile-1.jpg?width=1200&height=1200&fit=crop')
 
 INSERT INTO Genre (genreName)
 VALUES  
@@ -254,7 +258,11 @@ VALUES
     ('Selected Ambient Works 85-92', 17, '1992-11-09', 'https://upload.wikimedia.org/wikipedia/en/8/82/Selected_Ambient_Works_85-92.png', 1, 14),
     ('DAMN.', 18, '2017-04-14', 'https://upload.wikimedia.org/wikipedia/en/5/51/Kendrick_Lamar_-_Damn.png', 0, 54),
     ('Ten', 19, '1991-08-27', 'https://upload.wikimedia.org/wikipedia/en/2/2d/PearlJam-Ten2.jpg', 0, 53),
-    ('Songs in the Key of Life', 20, '1976-09-28', 'https://upload.wikimedia.org/wikipedia/en/e/e2/Songs_in_the_key_of_life.jpg', 0, 21)
+    ('Songs in the Key of Life', 20, '1976-09-28', 'https://upload.wikimedia.org/wikipedia/en/e/e2/Songs_in_the_key_of_life.jpg', 0, 21),
+    ('Beatopia', 21, '2022-07-15', 'https://upload.wikimedia.org/wikipedia/en/8/81/Beabadoobee_-_Beatopia.png', 0, 45),
+    ('The Rise and Fall of a Midwest Princess', 22, '2023-09-22', 'https://upload.wikimedia.org/wikipedia/en/3/34/Chappell_Roan_-_The_Rise_and_Fall_of_a_Midwest_Princess.png', 0, 49),
+    ('0.1 flaws and all.', 23, '2023-04-20', 'https://upload.wikimedia.org/wikipedia/en/a/a9/Cover_of_Wave_to_Earth%27s_album_0.1_Flaws_and_All.png', 0, 53),
+    ('Something to Give Each Other', 24, '2018-08-31', 'https://upload.wikimedia.org/wikipedia/en/1/1e/Troye_Sivan_-_Bloom_%28Official_Album_Cover%29.png', 0, 36)
 
 INSERT INTO Song (songName, artistID, albumID, songMinutes, songSeconds)
 VALUES
@@ -280,7 +288,15 @@ VALUES
     ('Sir Duke', 20, 23, 3, 54), 
     ('betty', 1, 2, 4, 54), 
     ('traitor', 3, 9, 3, 49),
-    ('Mine (Taylor''s Version)', 1, 10, 3, 51)
+    ('Mine (Taylor''s Version)', 1, 10, 3, 51),
+    ('Talk', 21, 24, 2, 39),
+    ('You''re here that'' the thing', 21, 24, 3, 19),
+    ('After Midnight', 22, 25, 3, 25),
+    ('Super Graphic Ultra Modern Girl', 22, 25, 3, 4),
+    ('bad', 23, 26, 4, 23),
+    ('The Good Side', 24, 27, 4, 28),
+    ('What a Heavenly Way to Die', 24, 27, 3, 7),
+    ('Animal', 24, 27, 4, 25)
 
 INSERT INTO SongGenreDetails (songID, genreID)
 VALUES
@@ -317,7 +333,17 @@ VALUES
     (21, 7), 
     (22, 1), 
     (22, 3),
-    (23, 1)
+    (23, 1),
+    (24, 3),
+    (24, 8),
+    (25, 3),
+    (25, 8),
+    (26, 1),
+    (27, 1),
+    (28, 3),
+    (29, 1),
+    (30, 1),
+    (31, 1)
 
 INSERT INTO SpotifyUser (displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined)
 VALUES
@@ -417,7 +443,8 @@ VALUES
     (8, 10), 
     (8, 21), 
     (8, 22), 
-    (8, 23)
+    (8, 23),
+    (2, 28)
 
 INSERT INTO ListenHistory (userID, songID, timeListened)
 VALUES 
