@@ -290,7 +290,7 @@ VALUES
     ('traitor', 3, 9, 3, 49),
     ('Mine (Taylor''s Version)', 1, 10, 3, 51),
     ('Talk', 21, 24, 2, 39),
-    ('You''re here that'' the thing', 21, 24, 3, 19),
+    ('You''re here that''s the thing', 21, 24, 3, 19),
     ('After Midnight', 22, 25, 3, 25),
     ('Super Graphic Ultra Modern Girl', 22, 25, 3, 4),
     ('bad', 23, 26, 4, 23),
