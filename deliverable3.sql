@@ -7,7 +7,7 @@ Due Date: Sunday, April 28, 2024
 */
 
 /* Creating the Database and Table Structure */
-CREATE DATABASE spotify_db_el_mc
+-- CREATE DATABASE spotify_db_el_mc
 GO
 
 -- Drop tables if they exist
@@ -191,7 +191,19 @@ VALUES
     ('Post', 'Malone', 'American singer-songwriter', 'https://www.billboard.com/wp-content/uploads/2023/04/02-post-malone-press-2023-cr-Emma-Louise-Swanson-billboard-1548.jpg'),
     ('Sabrina', 'Carpenter', 'American singer-songwriter', 'https://assets.teenvogue.com/photos/65c24d26781384320621e8f8/2:3/w_1590,h_2385,c_limit/1984755401'),
     ('Laufey', NULL, 'Icelandic-Chinese singer-songwriter', 'https://images.squarespace-cdn.com/content/v1/60300340d27ffb2c6946ccbe/3fff0229-0816-4d9e-9367-159f92059501/Goddess-WebsiteBackground-1500px.png'),
-    ('SEVENTEEN', NULL, 'South Korean boy band', 'https://images.squarespace-cdn.com/content/v1/62e0a51c3280db7edc1448d5/1a88f88b-47aa-4b78-8641-1b2911e2331f/Seventeen.jpg')
+    ('SEVENTEEN', NULL, 'South Korean boy band', 'https://images.squarespace-cdn.com/content/v1/62e0a51c3280db7edc1448d5/1a88f88b-47aa-4b78-8641-1b2911e2331f/Seventeen.jpg'),
+    ('Shania', 'Twain', 'Candadian singer-songwriter', 'https://s.abcnews.com/images/GMA/shania-twain-file-gty-220727_1658928618217_hpMain.jpg'),
+    ('Andrea', 'Bocelli', 'Italian tenor', 'https://upload.wikimedia.org/wikipedia/commons/3/35/Andrea_Bocelli_20190511_017-2_%28cropped%29.jpg'),
+    ('Nubya', 'Garcia', 'English jazz musician and saxophonist', 'https://images.squarespace-cdn.com/content/v1/5b23cda7e2ccd13a109a4f8b/1618326247593-MTEWHCE6AYF57ZOFJ50R/shot_01_nubya_garcia_076_r1_srgb.jpg'),
+    ('Metallica', NULL, 'American metal band', 'https://www.udiscovermusic.com/wp-content/uploads/2020/11/Metallica-GettyImages-531257207-1000x600.jpg'),
+    ('The Smiths', NULL, 'English rock band', 'https://media.npr.org/assets/img/2012/01/23/smiths-wrightphoto.co_.uk__0_wide-b866127b40d968ebf7502f5e7e7a5585d1ea8d04-s1400-c100.jpg'),
+    ('Lorde', NULL, 'New Zealand singer-songwriter', 'https://media.vanityfair.com/photos/593183cbec96261e360c6947/master/pass/hot-tracks-lorde-06-17.jpg'),
+    ('One Direction', NULL, 'English-Irish boy band', 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSOmDwMYlY9I_3Ph5eM_Dl6cUmLy3rW_QgFKrVC8qJLqDc1rsT6'),
+    ('Nicki', 'Minaj', 'Trinidadian rapper and singer', 'https://ca-times.brightspotcdn.com/dims4/default/b86f013/2147483647/strip/true/crop/4176x2784+0+0/resize/1200x800!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F2a%2F99%2F0509b7c34a068062d9024f1d456e%2Fla-ca-nicki-minaj-110.JPG'),
+    ('Aphex', 'Twin', 'British musician and composer', 'https://res.cloudinary.com/electronic-beats/c_fit,q_auto,f_auto,w_1920/stage/uploads/2013/08/aphex-twin-electronic-beats.jpg'),
+    ('Kendrick', 'Lamar', 'American rapper and singer-songwriter', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQpXGKZgni7hwvYnFUen08LQP43RoFAhJc_p6XQ1yL3uDne6GjX'),
+    ('Pearl Jam', NULL, 'American rock band', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQ8XDZna5SZwxVTg6YL8cddRaKOFF0WcJHKy0EjMZ4Vz8i6jbQE'),
+    ('Stevie', 'Wonder', 'American singer-songwriter and musician', 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTBPG8lmZR5oWGGKgKL8nscPJEFfPxpDel1CPMHAUKHcnhDl3M8')
 
 INSERT INTO Genre (genreName)
 VALUES  
@@ -230,7 +242,19 @@ VALUES
     ('Bewitched', 7, '2023-09-08', 'https://m.media-amazon.com/images/I/81m3iTR5bjL._UF1000,1000_QL80_.jpg', 0, 48),
     ('SOUR', 3, '2021-05-21', 'https://m.media-amazon.com/images/I/71Te1V90YDL._UF1000,1000_QL80_.jpg', 0, 34),
     ('Speak Now (Taylor''s Version)', 1, '2023-07-07', 'https://m.media-amazon.com/images/I/71QgmF3cnEL._UF1000,1000_QL80_.jpg', 1, 44),
-    ('Attaca', 8, '2021-10-22', 'https://upload.wikimedia.org/wikipedia/en/7/75/Seventeen_-_Attacca.png', 0, 22)
+    ('Attaca', 8, '2021-10-22', 'https://upload.wikimedia.org/wikipedia/en/7/75/Seventeen_-_Attacca.png', 0, 22),
+    ('FOUR', 15, '2014-11-17', 'https://upload.wikimedia.org/wikipedia/en/e/e8/One_Direction_-_Four.png', 0, 43),
+    ('The Woman in Me', 9, '1995-02-07', 'https://upload.wikimedia.org/wikipedia/en/d/d2/Shania_Twain_-_The_Woman_in_Me.png', 0, 48),
+    ('Love In Portofino', 10, '2013-10-21', 'https://m.media-amazon.com/images/I/915VcxVNdOL._UF1000,1000_QL80_.jpg', 0, 36),
+    ('Source', 11, '2020-08-21', 'https://upload.wikimedia.org/wikipedia/en/d/d0/Nubya_Garcia_-_Source_%28Album_Cover%29.jpg', 1, 0),
+    ('Ride the Lightning', 12, '1984-07-27', 'https://upload.wikimedia.org/wikipedia/en/f/f4/Ridetl.png', 0, 47),
+    ('The Queen Is Dead', 13, '1986-06-16', 'https://upload.wikimedia.org/wikipedia/en/e/ed/The-Queen-is-Dead-cover.png', 0, 36),
+    ('Melodrama', 14, '2017-06-16', 'https://upload.wikimedia.org/wikipedia/en/b/b2/Lorde_-_Melodrama.png', 0, 40),
+    ('Pink Friday', 16, '2010-11-22', 'https://upload.wikimedia.org/wikipedia/en/f/f1/Pink_Friday_album_cover.jpg', 0, 50),
+    ('Selected Ambient Works 85-92', 17, '1992-11-09', 'https://upload.wikimedia.org/wikipedia/en/8/82/Selected_Ambient_Works_85-92.png', 1, 14),
+    ('DAMN.', 18, '2017-04-14', 'https://upload.wikimedia.org/wikipedia/en/5/51/Kendrick_Lamar_-_Damn.png', 0, 54),
+    ('Ten', 19, '1991-08-27', 'https://upload.wikimedia.org/wikipedia/en/2/2d/PearlJam-Ten2.jpg', 0, 53),
+    ('Songs in the Key of Life', 20, '1976-09-28', 'https://upload.wikimedia.org/wikipedia/en/e/e2/Songs_in_the_key_of_life.jpg', 0, 21)
 
 INSERT INTO Song (songName, artistID, albumID, songMinutes, songSeconds)
 VALUES
@@ -243,21 +267,57 @@ VALUES
     ('From the Start', 7, 8, 2, 49), 
     ('love is embarrassing', 3, 4, 2, 34),
     ('AMERICA HAS A PROBLEM', 4, 5, 3, 18),
-    ('To you', 8, 11, 3, 45)
+    ('18', 15, 12, 4, 8),
+    ('Any Man of Mine', 9, 13, 4, 7),
+    ('Love In Portofino', 10, 14, 2, 59),
+    ('Pace', 11, 15, 7, 53),
+    ('Fight Fire With Fire', 12, 16, 4, 45),
+    ('The Queen Is Dead', 13, 17, 6, 24),
+    ('The Louvre', 14, 18, 3, 55),
+    ('Super Bass', 16, 19, 3, 20),
+    ('ELEMENT.', 18, 21, 1, 58),
+    ('Oceans', 19, 22, 2, 42),
+    ('Sir Duke', 20, 23, 3, 54), 
+    ('betty', 1, 2, 4, 54), 
+    ('traitor', 3, 9, 3, 49),
+    ('Mine (Taylor''s Version)', 1, 10, 3, 51)
 
 INSERT INTO SongGenreDetails (songID, genreID)
 VALUES
     (1, 1),
-    (2, 1),
-    (3, 3),
-    (4, 1),
-    (5, 2),
-    (6, 1),
-    (7, 1),
-    (7, 12),
-    (8, 1),
-    (9, 1),
-    (10, 13)
+    (1, 2),
+    (2, 1), 
+    (3, 1), 
+    (3, 2), 
+    (4, 1), 
+    (5, 1), 
+    (6, 1), 
+    (7, 1), 
+    (7, 12), 
+    (8, 3), 
+    (8, 8), 
+    (9, 4), 
+    (9, 10), 
+    (10, 1), 
+    (11, 7), 
+    (12, 11), 
+    (13, 12), 
+    (14, 9), 
+    (15, 1), 
+    (15, 3), 
+    (16, 1), 
+    (16, 8), 
+    (17, 1), 
+    (17, 5), 
+    (18, 5),
+    (18, 10),
+    (19, 2),
+    (20, 4),
+    (21, 1),
+    (21, 7), 
+    (22, 1), 
+    (22, 3),
+    (23, 1)
 
 INSERT INTO SpotifyUser (displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined)
 VALUES
@@ -267,7 +327,18 @@ VALUES
     ('BobWilliams', 'Bob', 'Williams', 'bob@example.com', 'https://www.akc.org/wp-content/uploads/2017/11/Golden-Retriever-Puppy.jpg', 5, '2023-04-10'),
     ('EmilyBrown', 'Emily', 'Brown', 'emily@example.com', 'https://us.yumove.com/cdn/shop/articles/Dog_ageing_puppy.jpg?v=1582123836', 4, '2023-05-05'),
     ('MichaelTaylor', 'Michael', 'Taylor', 'michael@example.com', 'https://www.southernliving.com/thmb/a4b73J7C4S4wgSmymmEgXRCmACA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-185743593-2000-507c6c8883a44851885ea4fbc10a2c9e.jpg', 2, '2023-06-20'),
-    ('meganchiang', 'Megan', 'Chiang', 'mjchiang@uw.edu', 'https://favim.com/pd/p/orig/2018/09/22/buttercup-sleep-ppg-Favim.com-6357107.jpg', 3, '2024-04-27')
+    ('meganchiang', 'Megan', 'Chiang', 'mjchiang@uw.edu', 'https://favim.com/pd/p/orig/2018/09/22/buttercup-sleep-ppg-Favim.com-6357107.jpg', 3, '2024-04-27'), 
+    ('evonnela', 'Evonne', 'La', 'evonnela@uw.edu', 'https://t3.ftcdn.net/jpg/02/99/23/70/360_F_299237086_LSGXAAWR049NBUct3snKiOKNhRLDKyEW.jpg', 3, '2024-04-28'),
+    ('AndrewClark', 'Andrew', 'Clark', 'andrew@example.com', 'https://media-be.chewy.com/wp-content/uploads/2022/09/27095535/cute-dogs-pembroke-welsh-corgi.jpg', 4, '2024-05-20'),
+    ('OliviaMartinez', 'Olivia', 'Martinez', 'olivia@example.com', 'https://paradepets.com/.image/ar_4:3%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTkxMzY1Nzg4NjczMzIwNTQ2/cutest-dog-breeds-jpg.jpg', 2, '2024-06-01'),
+    ('DanielGarcia', 'Daniel', 'Garcia', 'daniel@example.com', 'https://hips.hearstapps.com/hmg-prod/images/cutest-dog-breed-bernese-64356a43dbcc5.jpg', 3, '2024-06-15'),
+    ('SophiaHernandez', 'Sophia', 'Hernandez', 'sophia@example.com', 'https://i.pinimg.com/236x/84/98/7e/84987ef2b2982b032a83417db2d2a2d2.jpg', 1, '2024-07-01'),
+    ('MatthewYoung', 'Matthew', 'Young', 'matthew@example.com', 'https://images.unsplash.com/photo-1615751072497-5f5169febe17?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D', 5, '2024-07-10'),
+    ('AvaLee', 'Ava', 'Lee', 'ava@example.com', 'https://www.thesprucepets.com/thmb/aakdWmF36D3RYti507u94vWSwy0=/3600x0/filters:no_upscale():strip_icc()/cute-dog-breeds-we-can-t-get-enough-of-4589340-14-4cdb2f10e1654a468f13cd95ff880834.jpg', 2, '2024-07-20'),
+    ('ChristopherRodriguez', 'Christopher', 'Rodriguez', 'christopher@example.com', 'https://hips.hearstapps.com/hmg-prod/images/funny-dog-captions-1563456605.jpg?crop=0.748xw:1.00xh;0.0897xw,0&resize=1200:*', 3, '2024-08-05'),
+    ('MiaGonzalez', 'Mia', 'Gonzalez', 'mia@example.com', 'https://hips.hearstapps.com/wdy.h-cdn.co/assets/17/39/1600x1066/gallery-1506709524-cola-0247.jpg?resize=640:*', 4, '2024-08-15'),
+    ('WilliamMartinez', 'William', 'Martinez', 'william@example.com', 'https://images.pexels.com/photos/2607544/pexels-photo-2607544.jpeg?cs=srgb&dl=pexels-simonakidric-2607544.jpg&fm=jpg', 2, '2024-09-01'),
+    ('SofiaHernandez', 'Sofia', 'Hernandez', 'sofia@example.com', 'https://paradepets.com/.image/t_share/MTkxMzY1Nzg4NDA4ODgyNzg2/bichon-frise-dog.jpg', 3, '2024-09-10')
 
 INSERT INTO Follower (userID)
 VALUES 
@@ -277,7 +348,18 @@ VALUES
     (5),
     (6),
     (1),
-    (7)
+    (7), 
+    (8), 
+    (9),
+    (10),
+    (11),
+    (12),
+    (13),
+    (14),
+    (15),
+    (16),
+    (17),
+    (18)
 
 INSERT INTO UserFollowerDetails (userID, followerID, dateFollowed)
 VALUES
@@ -287,8 +369,19 @@ VALUES
     (4, 5, '2023-04-10'),
     (5, 6, '2023-05-05'),
     (6, 1, '2023-06-20'),
-    (2, 1, '2024-02-14'),
-    (7, 1, '2024-04-28')
+    (2, 1, '2023-02-14'),
+    (7, 1, '2023-04-28'), 
+    (8, 3, '2023-04-21'),
+    (9, 4, '2023-04-22'),
+    (10, 5, '2023-04-23'),
+    (11, 6, '2023-04-24'),
+    (12, 1, '2023-04-25'),
+    (13, 2, '2023-04-26'),
+    (14, 3, '2023-04-27'),
+    (15, 4, '2023-04-28'),
+    (16, 5, '2023-04-29'),
+    (17, 6, '2023-04-30'),
+    (18, 1, '2023-05-01')
 
 INSERT INTO Playlist (playlistName, userID, playlistDateCreated, playlistDescription, playlistImageURL)
 VALUES
@@ -298,7 +391,8 @@ VALUES
     ('Workout Mix', 4, '2024-04-03', 'Energetic tracks for workouts', 'https://i0.wp.com/post.healthline.com/wp-content/uploads/2023/02/female-dumbbells-1296x728-header-1296x729.jpg?w=1155&h=2268'),
     ('Road Trip Tunes', 5, '2021-12-13', 'Songs for a perfect road trip', 'https://www.wandering-bird.com/wp-content/uploads/2018/07/songs2-768x512.jpg'),
     ('Late Night Melodies', 6, '2024-01-01', 'Songs for winding down', 'https://i.pinimg.com/736x/de/35/98/de359848fb0d981c2b22f14e9fa4de00.jpg'),
-    ('on repeat', 'meganchiang', '2024-04-26', 'my favorite songs at the moment!', NULL)
+    ('on repeat', 7, '2024-04-26', 'my favorite songs at the moment!', NULL), 
+    ('spring songs', 8, '2024-04-28', 'songs that remind of me spring', NULL)
 
 INSERT INTO PlaylistTrack (playlistID, songID)
 VALUES
@@ -314,7 +408,16 @@ VALUES
     (7, 6),
     (7, 7),
     (7, 10),
-    (7, 11)
+    (7, 11), 
+    (8, 1), 
+    (8, 2), 
+    (8, 3), 
+    (8, 5), 
+    (8, 8), 
+    (8, 10), 
+    (8, 21), 
+    (8, 22), 
+    (8, 23)
 
 INSERT INTO ListenHistory (userID, songID, timeListened)
 VALUES 
@@ -326,8 +429,10 @@ VALUES
     (6, 6, '2023-06-20 20:00:00'),
     (7, 10, '2024-01-05 12:35:20'),
     (7, 10, '2024-02-14 11:30:0'),
-    (7, 8, '2024-04-27 22:10:59')
-
+    (7, 8, '2024-04-27 22:10:59'), 
+    (8, 1, '2024-04-20 12:35:20'),
+    (8, 2, '2022-05-21 11:30:0'),
+    (8, 21, '2024-04-10 22:10:59')
 
 /* Coding Database Objects */
 -- Stored Procedure 1 (Megan): Insert into User table
