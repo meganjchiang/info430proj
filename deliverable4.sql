@@ -213,6 +213,7 @@ SELECT * FROM SpotifyUser -- Evonne's previous email was 'evonnela@gmail.com'
 EXEC uspUpdateSpotifyUser 'evonnela', 'Evonne', 'La', 'evonnela@uw.edu', 'https://t3.ftcdn.net/jpg/02/99/23/70/360_F_299237086_LSGXAAWR049NBUct3snKiOKNhRLDKyEW.jpg', 3, '2024-04-28'
 SELECT * FROM SpotifyUser -- Evonne's new email is 'evonnela@uw.edu'
 
+
 /* Deleting a row of data: */
 -- Stored Procedure 1 (Megan): Delete a row of PlaylistTrack table
 GO
@@ -486,25 +487,23 @@ SET @audit_action='Updated User''s Display Name -- Instead Of Update Trigger.';
 
 BEGIN 
  BEGIN TRAN
-    -- does not update if the new display name is the same as the old one
-    IF (@displayName IN (SELECT displayName FROM SpotifyUser WHERE userID = @userID))
-		BEGIN
-			THROW 50063, 'New username must be different from current username', 1;
-			ROLLBACK; 
-		END
-        
-    -- does not update if the new display name is taken by another user
-	IF (@displayName IN (SELECT displayName FROM SpotifyUser))
-		BEGIN
-			THROW 50062, 'This username is already taken', 1;
-			ROLLBACK; 
-		END
+    IF EXISTS (SELECT 1 FROM SpotifyUser WHERE displayName = @displayName AND userID <> @userID)
+        BEGIN
+            THROW 50062, 'This username is already taken', 1;
+            ROLLBACK; 
+        END
 
-	ELSE
+    IF EXISTS (SELECT 1 FROM SpotifyUser WHERE userEmail = @userEmail AND userID <> @userID)
+        BEGIN
+            THROW 500623, 'This email is already taken', 1;
+            ROLLBACK; 
+        END
+
+	-- ELSE
 		BEGIN
 		-- updates username if it is unique
 			UPDATE SpotifyUser
-			SET displayName = @displayName
+			SET displayName = @displayName, userEmail = @userEmail -- note: need to revise to include all variables (in case other changes are made -> add different message depending on what is changed)
 			WHERE userID = @userID
 
 			INSERT INTO SpotifyUser_LOG(userID, displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined, userDuration, log_action, log_timestamp)
@@ -519,11 +518,6 @@ BEGIN
 -- this is guaranteed to fail because a user with display name 'meganchiang' already exists
 UPDATE SpotifyUser
 SET displayName = 'meganchiang'
-WHERE userID = 1
-
--- this is guaranteed to fail because the new username is the same as the old one
-UPDATE SpotifyUser
-SET displayName = 'JackDoe'
 WHERE userID = 1
 
 -- this is guaranteed to succeed
