@@ -77,10 +77,47 @@ CREATE OR ALTER PROCEDURE uspInsertSongGenre(
 EXEC uspInsertSongGenre 'To you', 'SEVENTEEN', NULL, 'K-Pop' -- after inserting, the songGenreID is 46
 select * from SongGenreDetails -- the corresponding songID is 32 ('To you') and genreID is 13 ('K-Pop'), so it worked!
 
--- Stored Procedure 2 (Evonne): 
+-- Stored Procedure 2 (Evonne): Insert into Artist table
+GO
+CREATE OR ALTER PROCEDURE uspInsertArtist(
+    @artistFirstName VARCHAR(50),
+    @artistLastName VARCHAR(50),
+    @artistDescription VARCHAR(500),
+    @artistImageURL VARCHAR(2048) = NULL
+    )
+    AS
+    BEGIN
+        DECLARE @artistID INT
 
+        SET @artistID = (
+            SELECT artistID
+            FROM Artist
+            WHERE artistFirstName = @artistFirstName 
+                AND (artistLastName = @artistLastName 
+                    OR (artistLastName IS NULL AND @artistLastName IS NULL))
+        )
 
+        IF @artistID IS NOT NULL
+        BEGIN
+            RAISERROR ('Artist already exists with the given name; process is terminating', 11, 1)
+            RETURN
+        END
 
+        BEGIN TRY
+            BEGIN TRANSACTION T1;
+                INSERT INTO Artist (artistFirstName, artistLastName, artistDescription, artistImageURL)
+                VALUES (@artistFirstName, @artistLastName, @artistDescription, @artistImageURL)
+            COMMIT TRANSACTION T1;
+        END TRY
+
+        BEGIN CATCH
+            ROLLBACK TRANSACTION T1;
+        END CATCH  
+    END
+
+-- test Stored Procedure 2:
+EXEC uspInsertArtist 'Victoria', 'Justice', 'American singer', NULL 
+SELECT * FROM Artist -- Victoria Justie is added into the artist table!
 
 /* Updating a row of data: */
 -- Stored Procedure 1 (Megan): Update a row of PlanType table
@@ -124,9 +161,57 @@ select * from PlanType -- original cost of Premium Individual is 10.99
 EXEC uspUpdatePlanType 'Premium Individual', 11.99
 select * from PlanType -- cost of Premium Individual is now 11.99
 
--- Stored Procedure 2 (Evonne):
+-- Stored Procedure 2 (Evonne): Update a row of SpotifyUser table
+GO
+CREATE OR ALTER PROCEDURE uspUpdateSpotifyUser(
+    @displayName VARCHAR(30),
+    @userFirstName VARCHAR(50),
+    @userLastName VARCHAR(50),
+    @userEmail VARCHAR(320),
+    @profilePictureURL VARCHAR(2048),
+    @planTypeID INT,
+    @dateJoined DATE
+    )
+    AS
+    BEGIN
+        DECLARE @userID INT
 
+        SET @userID = (
+            SELECT userID
+            FROM SpotifyUser
+            WHERE displayName = @displayName
+        )
 
+        IF @userID IS NULL
+        BEGIN
+            RAISERROR ('@userID cannot be NULL; process is terminating', 11, 1)
+            RETURN
+        END
+
+        BEGIN TRY
+            BEGIN TRANSACTION T1;
+                UPDATE SpotifyUser
+                SET displayName = @displayName,
+                    userFirstName = @userFirstName,
+                    userLastName = @userLastName,
+                    userEmail = @userEmail,
+                    profilePictureURL = @profilePictureURL,
+                    planTypeID = @planTypeID,
+                    dateJoined = @dateJoined
+                WHERE userID = @userID
+            COMMIT TRANSACTION T1;
+        END TRY
+
+        BEGIN CATCH
+            ROLLBACK TRANSACTION T1;
+        END CATCH
+    END
+GO
+
+-- test Stored Procedure 1:
+SELECT * FROM SpotifyUser -- Evonne's previous email was 'evonnela@gmail.com'
+EXEC uspUpdateSpotifyUser 'evonnela', 'Evonne', 'La', 'evonnela@uw.edu', 'https://t3.ftcdn.net/jpg/02/99/23/70/360_F_299237086_LSGXAAWR049NBUct3snKiOKNhRLDKyEW.jpg', 3, '2024-04-28'
+SELECT * FROM SpotifyUser -- Evonne's new email is 'evonnela@uw.edu'
 
 /* Deleting a row of data: */
 -- Stored Procedure 1 (Megan): Delete a row of PlaylistTrack table
@@ -218,14 +303,80 @@ CREATE OR ALTER PROCEDURE uspDeletePlaylistTrack(
     END
 GO
 
+-- test Stored Procedure 1:
 select playlistTrackID, playlistID, Song.songID, songName from PlaylistTrack join Song on PlaylistTrack.songID = Song.songID where playlistID = 7 -- from playlist called 'on repeat'
 EXEC uspDeletePlaylistTrack 'meganchiang', 'on repeat', 'Florida!!!', 'Taylor', 'Swift' -- removes the song called 'Florida!!!' from the 'on repeat' playlist
 select playlistTrackID, playlistID, Song.songID, songName from PlaylistTrack join Song on PlaylistTrack.songID = Song.songID where playlistID = 7 -- from playlist called 'on repeat'
 
-
 -- Stored Procedure 2 (Evonne):
+GO
+CREATE OR ALTER PROCEDURE uspDeleteSongGenre(
+    @songName VARCHAR(100),
+    @artistFirstName VARCHAR(50),
+    @artistLastName VARCHAR(50),
+    @genreName VARCHAR(50)
+    )
+    AS
+    BEGIN
+        DECLARE @songID INT, @artistID INT, @genreID INT
 
+        SET @artistID = (
+            SELECT artistID
+            FROM Artist
+            WHERE artistFirstName = @artistFirstName 
+                AND (artistLastName = @artistLastName 
+                    OR (artistLastName IS NULL AND @artistLastName IS NULL))
+        )
 
+        IF @artistID IS NULL
+        BEGIN
+            RAISERROR ('@artistID cannot be NULL; artist does not exist so process is terminating', 11, 1)
+            RETURN
+        END
+
+        SET @songID = (
+            SELECT songID
+            FROM Song
+            WHERE songName = @songName
+                AND artistID = @artistID
+        )
+
+        IF @songID IS NULL
+        BEGIN
+            RAISERROR ('@songID cannot be NULL; song does not exist so process is terminating', 11, 1)
+            RETURN
+        END
+
+        SET @genreID = (
+            SELECT genreID
+            FROM Genre
+            WHERE genreName = @genreName
+        )
+
+        IF @genreID IS NULL
+        BEGIN
+            RAISERROR ('@genreID cannot be NULL; genre does not exist so process is terminating', 11, 1)
+            RETURN
+        END
+
+        BEGIN TRY
+            BEGIN TRANSACTION T1;
+                DELETE FROM SongGenreDetails
+                WHERE songID = @songID
+                AND genreID = @genreID;
+            COMMIT TRANSACTION T1;
+        END TRY
+
+        BEGIN CATCH
+            ROLLBACK TRANSACTION T1;
+        END CATCH  
+    END
+GO
+
+-- test Stored Procedure 2:
+SELECT * FROM SongGenreDetails WHERE songID = 3 -- selecting the song 'vampire'
+EXEC uspDeleteSongGenre @songName = 'vampire', @artistFirstName = 'Olivia', @artistLastName = 'Rodrigo', @genreName = 'Pop';
+SELECT * FROM SongGenreDetails WHERE songID = 3 -- deletes the 'Pop' genre from the song 'vampire'
 
 /*
 Write the SQL code to create two (2) triggers; one should be an AFTER trigger (either insert, update, or Delete) and the other should be an INSTEAD OF trigger (again, either insert, update, or delete).
@@ -265,9 +416,44 @@ WHERE playlistTrackID = 26
 -- verify that it worked
 select * from PlaylistTrack_LOG
 
+-- AFTER-Update Trigger 2 (Evonne): record Audit information after updating a row from Artist table
+CREATE TABLE Artist_LOG (
+    artistID INT,
+    artistFirstName VARCHAR(50),
+    artistLastName VARCHAR(50),
+    artistDescription VARCHAR(500),
+    artistImageURL VARCHAR(2048),
+    log_action VARCHAR(100),
+    log_timestamp DATETIME
+)
 
--- AFTER-[action type here] Trigger 2 (Evonne): 
+GO
+CREATE OR ALTER TRIGGER trigAfterUpdateArtist ON Artist
+AFTER UPDATE
+AS
+BEGIN
+    DECLARE @artistID INT, @artistFirstName VARCHAR(50), @artistLastName VARCHAR(50), 
+            @artistDescription VARCHAR(500), @artistImageURL VARCHAR(2048), @audit_action VARCHAR(100);
 
+    SELECT @artistID = i.artistID, @artistFirstName = i.artistFirstName, @artistLastName = i.artistLastName,
+           @artistDescription = i.artistDescription, @artistImageURL = i.artistImageURL
+    FROM Inserted i;
+
+    SET @audit_action = 'Updated Artist -- After Update Trigger.';
+
+    INSERT INTO Artist_LOG(artistID, artistFirstName, artistLastName, artistDescription, artistImageURL, log_action, log_timestamp)
+    VALUES (@artistID, @artistFirstName, @artistLastName, @artistDescription, @artistImageURL, @audit_action, GETDATE());
+
+    PRINT 'AFTER UPDATE trigger fired successfully.';
+END;
+
+-- test the trigger
+UPDATE Artist
+SET artistDescription = 'British singer-songwriter'
+WHERE artistID = 2; 
+
+-- verify that it worked
+SELECT * FROM Artist_LOG;
 
 /* INSTEAD-OF Triggers: */
 -- INSTEAD OF-Update Trigger 1 (Megan): update user's display name, only allow users to change to a display name that doesn't exist
@@ -349,9 +535,37 @@ WHERE userID = 18
 select * from SpotifyUser_LOG
 select * from SpotifyUser where userID = 18 -- should now be 'SHernandez'
 
--- INSTEAD OF-[action type here] Trigger 2 (Evonne): 
+-- INSTEAD OF-Delete Trigger 2 (Evonne): prevents duplicate playlist names
+GO
+CREATE OR ALTER TRIGGER trgInsteadOfInsertPlaylistName
+ON Playlist
+INSTEAD OF INSERT
+AS
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Inserted i
+        JOIN Playlist p ON i.playlistName = p.playlistName AND i.userID = p.userID
+    )
 
+    BEGIN
+        PRINT 'Duplicate playlist name detected for the same user. Insert operation prevented.';
+    END
 
+    ELSE
+        BEGIN
+            INSERT INTO Playlist (playlistName, userID, playlistDateCreated, playlistDescription, playlistImageURL)
+            SELECT playlistName, userID, playlistDateCreated, playlistDescription, playlistImageURL
+            FROM Inserted;
+            PRINT 'Playlist inserted successfully.';
+        END
+    END;
+
+-- test the trigger
+-- guaranteed to fail because user already has playlist with this name
+GO
+INSERT INTO Playlist (playlistName, userID, playlistDateCreated, playlistDescription, playlistImageURL)
+VALUES ('evonne''s playlist', 8, GETDATE(), 'favorite songs', NULL)
 
 /* Write the SQL code to create one (1) computed column */
 -- Note: For Deliverable 3, we had made 2 computed columns each, so we are using some of the columns we have already made
@@ -360,8 +574,8 @@ ALTER TABLE Song
 ADD songTotalSeconds AS (songMinutes * 60) + songSeconds; -- this column already exists in the Song table (from Deliverable 3)
 
 -- Computed Column 2 (Evonne):
-
-
+ALTER TABLE SpotifyUser
+ADD userDuration AS DATEDIFF(day, dateJoined, GETDATE()); -- this column already exists in the SpotifyUser table (from Deliverable 3)
 
 /* Write the SQL code to create two (2) different complex queries. One of these queries should use a stored procedure that takes given inputs and returns the expected output. */
 -- Complex Query 1 (Megan): Given a year and number of results, what are the most listened-to songs?
@@ -410,7 +624,6 @@ EXEC uspSelectPopularSongs 2023, -1
 
 GO
 
-
 -- Complex Query 2 (Megan): For each year, what was the most frequently listened-to genre?
 WITH genre_plays AS (
     SELECT YEAR(timeListened) AS year_played, g.genreName, COUNT(*) as num_plays
@@ -433,10 +646,46 @@ JOIN max_play_counts m
         AND g.num_plays = m.max_plays
 ORDER BY g.year_played DESC;
 
+-- Complex Query 3 (Evonne): Statistics on the number of listens for each combination of genre and artist.
+WITH song_genre_counts AS (
+    SELECT sg.genreID, s.artistID, COUNT(*) AS listen_count
+    FROM ListenHistory lh
+    JOIN Song s ON lh.songID = s.songID
+    JOIN SongGenreDetails sg ON s.songID = sg.songID
+    GROUP BY sg.genreID, s.artistID
+),
+max_genre_counts AS (
+    SELECT genreID, MAX(listen_count) AS max_listen_count
+    FROM song_genre_counts
+    GROUP BY genreID
+)
+SELECT 
+    g.genreName, CONCAT(ar.artistFirstName + ' ' + ar.artistLastName, '') AS artistName, sgc.listen_count
+FROM song_genre_counts sgc
+JOIN max_genre_counts mgc ON sgc.genreID = mgc.genreID AND sgc.listen_count = mgc.max_listen_count
+JOIN Genre g ON sgc.genreID = g.genreID
+JOIN Artist ar ON sgc.artistID = ar.artistID
+ORDER BY sgc.listen_count DESC;
 
--- Complex Query 3 (Evonne):
+-- Complex Query 4 (Evonne): Which user has the most diverse range of song genres within their playlists?
+WITH user_playlist_genre_counts AS (
+    SELECT
+        u.userID, CONCAT(u.userFirstName, ' ', u.userLastName) AS UserName, COUNT(DISTINCT g.genreID) AS genre_count
+    FROM SpotifyUser u
+    JOIN Playlist p ON u.userID = p.userID
+    JOIN PlaylistTrack pt ON p.playlistID = pt.playlistID
+    JOIN Song s ON pt.songID = s.songID
+    JOIN SongGenreDetails sg ON s.songID = sg.songID
+    JOIN Genre g ON sg.genreID = g.genreID
+    GROUP BY u.userID, CONCAT(u.userFirstName, ' ', u.userLastName)
+)
+SELECT TOP 1
+    upgc.userID,
+    upgc.UserName,
+    upgc.genre_count
+FROM user_playlist_genre_counts upgc
+ORDER BY upgc.genre_count DESC;
 
 
--- Complex Query 4 (Evonne):
 
 
