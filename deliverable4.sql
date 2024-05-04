@@ -74,8 +74,10 @@ CREATE OR ALTER PROCEDURE uspInsertSongGenre(
     END
 
 -- test Stored Procedure 1:
-EXEC uspInsertSongGenre 'To you', 'SEVENTEEN', NULL, 'K-Pop' -- after inserting, the songGenreID is 46
-select * from SongGenreDetails -- the corresponding songID is 32 ('To you') and genreID is 13 ('K-Pop'), so it worked!
+EXEC uspInsertSongGenre 'To you', 'SEVENTEEN', NULL, 'K-Pop'
+select * from SongGenreDetails
+
+select * from Song
 
 -- Stored Procedure 2 (Evonne): Insert into Artist table
 GO
@@ -456,7 +458,7 @@ WHERE artistID = 2;
 SELECT * FROM Artist_LOG;
 
 /* INSTEAD-OF Triggers: */
--- INSTEAD OF-Update Trigger 1 (Megan): update user's display name, only allow users to change to a display name that doesn't exist
+-- INSTEAD OF-Update Trigger 1 (Megan): update user's display name and/or email, only allow users to change to a display name and/or email that doesn't exist in database
 CREATE TABLE SpotifyUser_LOG
 (
     userID INT,
@@ -473,7 +475,7 @@ CREATE TABLE SpotifyUser_LOG
 )
 
 GO
-CREATE OR ALTER TRIGGER trgInsteadOfUpdateUserDisplayName ON SpotifyUser
+CREATE OR ALTER TRIGGER trgInsteadOfUpdateUserInfo ON SpotifyUser
 INSTEAD OF UPDATE
 AS
 DECLARE @userID INT, @displayName VARCHAR(30), @userFirstName VARCHAR(50), @userLastName VARCHAR(50), @userEmail VARCHAR(320), @profilePictureURL VARCHAR(2048),
@@ -482,6 +484,7 @@ DECLARE @userID INT, @displayName VARCHAR(30), @userFirstName VARCHAR(50), @user
 SELECT @userID = i.userID, @displayName = i.displayName, @userFirstName = i.userFirstName, @userLastName = i.userLastName, @userEmail = i.userEmail,
 @profilePictureURL = i.profilePictureURL, @planTypeID = i.planTypeID, @dateJoined = i.dateJoined, @userDuration = i.userDuration
 FROM Inserted i;
+
 SET @audit_action='Updated User''s Display Name -- Instead Of Update Trigger.';
 
 BEGIN 
@@ -494,24 +497,30 @@ BEGIN
 
     IF EXISTS (SELECT 1 FROM SpotifyUser WHERE userEmail = @userEmail AND userID <> @userID)
         BEGIN
-            THROW 500623, 'This email is already taken', 1;
+            THROW 50063, 'This email is already taken', 1;
             ROLLBACK; 
         END
 
-	-- ELSE
+	ELSE
 		BEGIN
-		-- updates username if it is unique
-			UPDATE SpotifyUser
-			SET displayName = @displayName, userEmail = @userEmail -- note: need to revise to include all variables (in case other changes are made -> add different message depending on what is changed)
-			WHERE userID = @userID
+			IF UPDATE(displayName)
+                UPDATE SpotifyUser
+                SET displayName = @displayName
+                WHERE userID = @userID
+            
+            IF UPDATE(userEmail)
+                UPDATE SpotifyUser
+                SET userEmail = @userEmail
+                WHERE userID = @userID
 
 			INSERT INTO SpotifyUser_LOG(userID, displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined, userDuration, log_action, log_timestamp)
 				VALUES (@userID, @displayName, @userFirstName, @userLastName, @userEmail, @profilePictureURL, @planTypeID, @dateJoined, @userDuration, @audit_action, GETDATE());
 				COMMIT;
-				PRINT (CONCAT('The display name for user with id of ', @userID, ' had been updated successfully'))
+				PRINT (CONCAT('The account information for user with id of ', @userID, ' had been updated successfully'))
 				PRINT 'INSTEAD OF trigger fired successfully.'
 		END
     END
+GO
 
 -- test the trigger
 -- this is guaranteed to fail because a user with display name 'meganchiang' already exists
@@ -688,7 +697,3 @@ GO
 
 -- test stored procedure:
 EXEC uspTopGenresByUser 'evonnela' 
-
-
-
-
