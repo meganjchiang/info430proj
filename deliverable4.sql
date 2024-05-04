@@ -77,8 +77,6 @@ CREATE OR ALTER PROCEDURE uspInsertSongGenre(
 EXEC uspInsertSongGenre 'To you', 'SEVENTEEN', NULL, 'K-Pop'
 select * from SongGenreDetails
 
-select * from Song
-
 -- Stored Procedure 2 (Evonne): Insert into Artist table
 GO
 CREATE OR ALTER PROCEDURE uspInsertArtist(
