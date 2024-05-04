@@ -213,7 +213,6 @@ SELECT * FROM SpotifyUser -- Evonne's previous email was 'evonnela@gmail.com'
 EXEC uspUpdateSpotifyUser 'evonnela', 'Evonne', 'La', 'evonnela@uw.edu', 'https://t3.ftcdn.net/jpg/02/99/23/70/360_F_299237086_LSGXAAWR049NBUct3snKiOKNhRLDKyEW.jpg', 3, '2024-04-28'
 SELECT * FROM SpotifyUser -- Evonne's new email is 'evonnela@uw.edu'
 
-
 /* Deleting a row of data: */
 -- Stored Procedure 1 (Megan): Delete a row of PlaylistTrack table
 GO
@@ -661,24 +660,34 @@ JOIN Genre g ON sgc.genreID = g.genreID
 JOIN Artist ar ON sgc.artistID = ar.artistID
 ORDER BY sgc.listen_count DESC;
 
--- Complex Query 4 (Evonne): Which user has the most diverse range of song genres within their playlists?
-WITH user_playlist_genre_counts AS (
-    SELECT
-        u.userID, CONCAT(u.userFirstName, ' ', u.userLastName) AS UserName, COUNT(DISTINCT g.genreID) AS genre_count
-    FROM SpotifyUser u
-    JOIN Playlist p ON u.userID = p.userID
-    JOIN PlaylistTrack pt ON p.playlistID = pt.playlistID
-    JOIN Song s ON pt.songID = s.songID
-    JOIN SongGenreDetails sg ON s.songID = sg.songID
-    JOIN Genre g ON sg.genreID = g.genreID
-    GROUP BY u.userID, CONCAT(u.userFirstName, ' ', u.userLastName)
+-- Complex Query 4 (Evonne): Given a SpotifyUser's display name, return the top 5 most listened-to genres in their playlists
+GO
+CREATE OR ALTER PROCEDURE uspTopGenresByUser(
+    @displayName VARCHAR(30)
 )
-SELECT TOP 1
-    upgc.userID,
-    upgc.UserName,
-    upgc.genre_count
-FROM user_playlist_genre_counts upgc
-ORDER BY upgc.genre_count DESC;
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM SpotifyUser WHERE displayName = @displayName)
+    BEGIN
+        RAISERROR ('User with provided display name does not exist', 16, 1)
+        RETURN
+    END
+
+    SELECT TOP 5 g.genreName, COUNT(*) AS num_listens
+    FROM ListenHistory lh
+    JOIN PlaylistTrack pt ON lh.songID = pt.songID
+    JOIN Playlist p ON pt.playlistID = p.playlistID
+    JOIN SpotifyUser su ON p.userID = su.userID
+    JOIN SongGenreDetails sgd ON lh.songID = sgd.songID
+    JOIN Genre g ON sgd.genreID = g.genreID
+    WHERE su.displayName = @displayName
+    GROUP BY g.genreName
+    ORDER BY num_listens DESC;
+END;
+GO
+
+-- test stored procedure:
+EXEC uspTopGenresByUser 'evonnela' 
 
 
 
