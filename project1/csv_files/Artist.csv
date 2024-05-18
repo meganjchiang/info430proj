@@ -1,0 +1,8 @@
+artistID, artistFirstName, artistLastName, artistDescription, artistImageURL
+1, "Taylor", "Swift", "American singer-songwriter", "taylor_swift_image_url"
+2, "Harry", "Styles", "English singer-songwriter", "harry_styles_image_url"
+3, "Olivia", "Rodrigo", "American singer-songwriter", "olivia_rodrigo_image_url"
+4, "Beyoncé", "", "American singer-songwriter", "beyonce_image_url"
+5, "Post", "Malone", "American singer-songwriter", "post_malone_image_url"
+6, "Sabrina", "Carpenter", "American singer-songwriter", "sabrina_carpenter_image_url"
+

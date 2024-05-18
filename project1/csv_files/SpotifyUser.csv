@@ -1,0 +1,7 @@
+userID, displayName, userFirstName, userLastName, userEmail, profilePictureURL, planTypeID, dateJoined
+1, "JohnDoe", "John", "Doe", "john@example.com", "john_profile.jpg", 2, 2023-01-01
+2, "JaneSmith", "Jane", "Smith", "jane@example.com", "jane_profile.jpg", 3, 2023-02-15
+3, "AliceJohnson", "Alice", "Johnson", "alice@example.com", "alice_profile.jpg", 2, 2023-03-20
+4, "BobWilliams", "Bob", "Williams", "bob@example.com", "bob_profile.jpg", 5, 2023-04-10
+5, "EmilyBrown", "Emily", "Brown", "emily@example.com", "emily_profile.jpg", 4, 2023-05-05
+6, "MichaelTaylor", "Michael", "Taylor", "michael@example.com", "michael_profile.jpg", 2, 2023-06-20

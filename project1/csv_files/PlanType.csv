@@ -1,0 +1,7 @@
+planTypeID, planTypeName, planCost
+1, "Free", $0
+2, "Premium Individual", $10.99
+3, "Premium Student", $5.99
+4, "Premium Duo", $14.99
+5, "Premium Family", $16.99
+6, "Premium Trial", $0

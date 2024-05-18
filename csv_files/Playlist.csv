@@ -1,7 +1,0 @@
-playlistID, playlistName, userID, playlistDescription, playlistImageURL
-1, "Top Hits", 1, "Collection of top songs", "top_hits_image_url"
-2, "Chill Vibes", 2, "Relaxing music for any mood", "chill_vibes_image_url"
-3, "Study Jams", 3, "Concentration music for studying", "study_jams_image_url"
-4, "Workout Mix", 4, "Energetic tracks for workouts", "workout_mix_image_url"
-5, "Road Trip Tunes", 5, "Songs for a perfect road trip", "road_trip_tunes_image_url"
-6, "Late Night Melodies", 6, "Songs for winding down", "late_night_melodies_image_url"
