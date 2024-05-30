@@ -127,17 +127,11 @@ The results show that proportion of CO2 emissions stayed very similar from 2015 
 in 2022, the percentage increased by 10 percentage points. This might be due to changes in
 industrial activities, energy production sources, or transportation patterns.
 */
-CREATE TABLE #tempEmissionSummaryYearGas (
-    yearName VARCHAR(10),
-    gasName VARCHAR(50),
-    totalEmissions NUMERIC(22, 10)
-);
-
-INSERT INTO #tempEmissionSummaryYearGas (yearName, gasName, totalEmissions)
 SELECT 
     COALESCE(y.yearName, 'All Years') AS yearName,
     COALESCE(g.gasName, 'All Gases') AS gasName,
     SUM(e.emissionQuantity) AS totalEmissions
+INTO #tempEmissionSummaryYearGas
 FROM fctEmission e
 JOIN dimYear y ON e.yearID = y.yearID
 JOIN dimGas g ON e.gasID = g.gasID
@@ -154,7 +148,7 @@ co2_percentages AS (
     WHERE gasName = 'co2' AND yearName <> 'All Years'
 )
 SELECT 
-    t.yearName AS 'Year',
+    t.yearName AS [Year],
     CASE
         WHEN 
             ROUND(100 * c.totalEmissions / t.totalEmissions, 2) % 1 = 0
@@ -162,7 +156,7 @@ SELECT
             CAST(FORMAT(ROUND(100 * c.totalEmissions / t.totalEmissions, 0), 'N0') AS VARCHAR(20)) + '%'
         ELSE
             REPLACE(CAST(ROUND(100 * c.totalEmissions / t.totalEmissions, 2) AS VARCHAR(20)), '0', '') + '%'
-    END AS 'CO2 Emissions Percentage'
+    END AS [CO2 Emissions Percentage]
 FROM total_emissions_per_year t
 JOIN co2_percentages c ON t.yearName = c.yearName;
 
@@ -196,7 +190,7 @@ WITH country_emission_ranks AS (
 SELECT
     yearName AS [Year],
     countryName AS Country, 
-    FORMAT(totalEmissions, 'N2') AS 'Total Emissions (tonnes)'
+    FORMAT(totalEmissions, 'N2') AS [Total Emissions (tonnes)]
 FROM country_emission_ranks
 WHERE rank <= 5;
 
@@ -247,10 +241,10 @@ SELECT
     countryName AS Country,
     yearName AS [Year],
     REPLACE(CAST(ROUND(percentChange, 2) AS VARCHAR(10)), '0', '') + '%'
-        AS 'Percent Increase in Emissions From Previous Year'
+        AS [Percent Increase in Emissions From Previous Year]
 FROM country_emissions_differences
 WHERE rank = 1
-ORDER BY 'Percent Increase in Emissions From Previous Year' DESC;
+ORDER BY [Percent Increase in Emissions From Previous Year] DESC;
 
 
 /* Time Series Analytic Function (Megan)
@@ -306,6 +300,6 @@ change_in_avg AS (
 SELECT
     yearName AS [Year],
     sectorName AS Sector,
-    FORMAT(moving_emission_avg_2_year, 'N2') AS 'Average Emission Quantity in Previous 2 Years (tonnes)',
-    change AS 'Change in Average Emission Quantity from Previous Year'
+    FORMAT(moving_emission_avg_2_year, 'N2') AS [Average Emission Quantity in Previous 2 Years (tonnes)],
+    change AS [Change in Average Emission Quantity from Previous Year]
 FROM change_in_avg;
