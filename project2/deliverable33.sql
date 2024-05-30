@@ -10,7 +10,7 @@ Due Date: Thursday, May 30, 2024
 -- Calculates the total emission quantity per sector per country. Also provides the total emission 
 -- quantity per country as well as the grand total emission quantity for all countries at the end. 
 -- Interpretation: 
--- This query provides us with insight into which countries and practices produce the most emission 
+-- This query provides insight into which countries and practices produce the most emission 
 -- quantity, giving policymakers crucial information that could help them implement policies 
 -- or laws to reduce the environmental impact of these sectors and countries. 
 CREATE TABLE #tempEmissionSummary (
@@ -43,7 +43,7 @@ DROP TABLE #tempEmissionSummary;
 
 -- Ranking Window function (Evonne)
 -- Purpose: 
--- Identifies and ranks the top 3 sectors by emission quantity for each country.
+-- Identifies, ranks, and displays the top 3 sectors by emission quantity for each country.
 -- Interpretation: 
 -- This query provides insights into the sectors contributing the most to emissions in each country,
 -- giving the policymakers of each country a good understanding of which practices are most harmful to 
@@ -66,11 +66,55 @@ WHERE SectorRank <= 3
 ORDER BY countryName, SectorRank, totalEmissions DESC;
 
 
+-- Value Window function (Evonne)
+-- Purpose: 
+-- Identifies and ranks the top 3 gas types by emission quantity for each country in the year 2020.
+-- Interpretation:
+-- This query provides insight into the top 3 gas types with the highest emission quantity and the countries
+-- that contribute the most to those emission quantities. It also provides the total emission quantities of 
+-- the respective countries. As the table is dominated by the same 4 countries, it informs the world of which 
+-- countries are contributing the most to Earth's environmental decline. This information can be used to hold these
+-- countries accountable for their effect on environmental degradation.
+WITH RankedEmissions AS (
+    SELECT
+        dc.countryName, 
+        dg.gasName,
+        SUM(fe.emissionQuantity) AS totalEmissions,
+        ROW_NUMBER() OVER(PARTITION BY dg.gasID ORDER BY SUM(fe.emissionQuantity) DESC, dc.countryName) AS rank
+    FROM dimCountry dc
+    JOIN fctEmission fe ON dc.countryID = fe.countryID
+    JOIN dimGas dg ON fe.gasID = dg.gasID
+    JOIN dimYear dy ON fe.yearID = dy.yearID
+    WHERE dy.yearName = '2020' 
+    GROUP BY dc.countryName, dg.gasName, dg.gasID
+)
+SELECT gasName, countryName, totalEmissions
+FROM RankedEmissions
+WHERE rank <= 3;
 
-
--- Evonne's other 2 queries here
-
-
+-- Time Series Analytic function (Evonne)
+-- Purpose: 
+-- Analyzes the trend of total emissions for the United States over time by calculating a moving average 
+-- of the total emission quantity for each year from 2015 to 2022. 
+-- Interpretation: 
+-- This query provides insight into the trend of total emissions by the United States over time. It informs 
+-- policymakers of the direction the United States is heading in regarding its total emissions and can 
+-- determine the significance of these moving averages. This information helps policymakers make informed decisions 
+-- on how to mitigate these high emission quantities. 
+WITH EmissionsData AS (
+    SELECT dy.yearName, SUM(fe.emissionQuantity) AS totalEmissions
+    FROM dimCountry dc
+    JOIN fctEmission fe ON dc.countryID = fe.countryID
+    JOIN dimYear dy ON fe.yearID = dy.yearID
+    WHERE dc.countryName = 'United States'
+    GROUP BY dy.yearName
+)
+SELECT
+    yearName,
+    totalEmissions,
+    AVG(totalEmissions) OVER (ORDER BY yearName ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg
+FROM EmissionsData
+ORDER BY yearName;
 
 
 /* CUBE Function (Megan)
